@@ -17,7 +17,7 @@ load_dotenv()
 
 # Page configuration
 st.set_page_config(
-    page_title="🏨 Hotel Reservations Agent",
+    page_title="🏨 HG2 Hotel Reservations",
     page_icon="🏨",
     layout="centered",
     initial_sidebar_state="collapsed"
@@ -86,7 +86,14 @@ if 'messages' not in st.session_state:
 def display_chat():
     """Display the main chat interface"""
     # Header
-    st.markdown('<h1 class="main-header">🏨 Hotel Reservations Agent</h1>', unsafe_allow_html=True)
+    st.markdown('''
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 class="main-header">🏨 HG2 Hotel Reservations</h1>
+        <div style="color: #666; font-size: 1.1rem; font-weight: 300; margin-top: -0.5rem;">
+            AI Powered
+        </div>
+    </div>
+    ''', unsafe_allow_html=True)
     
     # System status
     if not st.session_state.agent_initialized:
@@ -97,8 +104,7 @@ def display_chat():
         st.info("• Verify database connection in .env file")
         st.info("• Ensure AWS credentials are configured")
         return
-    else:
-        st.markdown('<div class="system-status">✅ Agent Ready | 🗄️ Database Connected | 🤖 AI Powered</div>', unsafe_allow_html=True)
+    # No system status display needed
     
     # Display chat messages
     for message in st.session_state.messages:
@@ -107,25 +113,27 @@ def display_chat():
     
     # Chat input
     if prompt := st.chat_input("Ask me about hotels, availability, reservations..."):
-        # Add user message to chat history
+        # Add and display user message immediately
         st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
         
-        # Get assistant response
-        with st.spinner("🤔 Processing your request..."):
-            try:
-                response = st.session_state.agent.chat(prompt)
-                st.session_state.messages.append({"role": "assistant", "content": response})
-            except Exception as e:
-                error_msg = f"I apologize, but I encountered an error: {str(e)}\n\nPlease try again or contact support if the issue persists."
-                st.session_state.messages.append({"role": "assistant", "content": error_msg})
-        
-        # Rerun to display the new messages
-        st.rerun()
+        # Get and display assistant response
+        with st.chat_message("assistant"):
+            with st.spinner("🤔 Processing your request..."):
+                try:
+                    response = st.session_state.agent.chat(prompt)
+                    st.markdown(response)
+                    st.session_state.messages.append({"role": "assistant", "content": response})
+                except Exception as e:
+                    error_msg = f"I apologize, but I encountered an error: {str(e)}\n\nPlease try again or contact support if the issue persists."
+                    st.markdown(error_msg)
+                    st.session_state.messages.append({"role": "assistant", "content": error_msg})
 
 def display_sidebar():
     """Display sidebar with helpful information"""
     with st.sidebar:
-        st.title("🏨 Hotel Assistant")
+        st.title("🏨 HG2 Assistant")
         
         # System status
         if st.session_state.agent_initialized:
@@ -136,11 +144,17 @@ def display_sidebar():
         # Quick examples
         st.markdown("### 💡 Try asking:")
         st.markdown("""
+        **Hotel Services:**
         - "Find hotels in New York"
         - "Show me rooms at Grand Plaza Hotel from March 15-18"
         - "I want to make a reservation"
         - "Look up my booking for john@email.com"
-        - "What amenities does the Seaside Resort have?"
+        
+        **Travel Information:**
+        - "What are the best restaurants near Grand Plaza Hotel?"
+        - "What attractions are near Miami Beach?"
+        - "How's the weather in Denver this week?"
+        - "What's the best way to get from airport to downtown?"
         """)
         
         # Clear chat button

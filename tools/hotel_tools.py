@@ -5,6 +5,8 @@ from datetime import datetime, date
 from typing import List, Dict, Optional
 from strands.tools import tool
 from database.models import db
+from ddgs.exceptions import DDGSException, RatelimitException
+from ddgs import DDGS
 
 @tool
 def search_hotels(city: str = None, state: str = None, min_rating: float = None, max_price: float = None) -> str:
@@ -405,3 +407,46 @@ def cancel_reservation(reservation_id: int, guest_email: str) -> str:
         
     except Exception as e:
         return f"Error cancelling reservation: {str(e)}"
+
+@tool
+def web_search(keywords: str, region: str = "us-en", max_results: int = 5) -> str:
+    """
+    Search the web for information about hotels, travel destinations, local attractions, or travel tips.
+    
+    Args:
+        keywords: The search query keywords (e.g., "best restaurants near Grand Plaza Hotel New York")
+        region: The search region (default: us-en, options: wt-wt, us-en, uk-en, etc.)
+        max_results: Maximum number of results to return (default: 5)
+    
+    Returns:
+        Formatted search results with titles, descriptions, and URLs
+    """
+    try:
+        results = DDGS().text(keywords, region=region, max_results=max_results)
+        
+        if not results:
+            return "No search results found for your query."
+        
+        formatted_results = f"🔍 **Web Search Results for:** {keywords}\n\n"
+        
+        for i, result in enumerate(results, 1):
+            title = result.get('title', 'No title')
+            body = result.get('body', 'No description available')
+            href = result.get('href', '#')
+            
+            # Truncate long descriptions
+            if len(body) > 200:
+                body = body[:200] + "..."
+            
+            formatted_results += f"**{i}. {title}**\n"
+            formatted_results += f"📝 {body}\n"
+            formatted_results += f"🔗 {href}\n\n"
+        
+        return formatted_results
+        
+    except RatelimitException:
+        return "⚠️ Search rate limit reached. Please try again in a few moments."
+    except DDGSException as e:
+        return f"⚠️ Search service error: {str(e)}. Please try again later."
+    except Exception as e:
+        return f"⚠️ Search error: {str(e)}. Please try a different search query."

@@ -15,7 +15,8 @@ from tools.hotel_tools import (
     get_available_rooms,
     make_reservation,
     get_reservation_details,
-    cancel_reservation
+    cancel_reservation,
+    web_search
 )
 
 load_dotenv()
@@ -43,6 +44,7 @@ class HotelReservationAgent:
         3. make_reservation() - Create new hotel reservations
         4. get_reservation_details() - Look up existing reservations
         5. cancel_reservation() - Cancel existing reservations
+        6. web_search() - Search the web for travel information, local attractions, restaurant recommendations, and general travel tips
         
         Always:
         - Ask for all required information before making reservations
@@ -57,7 +59,19 @@ class HotelReservationAgent:
         - Check-in and check-out dates
         - Room preference (if any)
         
-        Always use the appropriate tool to get accurate, real-time information from the database."""
+        Always use the appropriate tool to get accurate, real-time information from the database.
+        
+        Use web_search() when customers ask about:
+        - Current date, time, or day of the week
+        - Local attractions near hotels
+        - Restaurant recommendations in the area
+        - Transportation options
+        - Weather information
+        - Travel tips and guides
+        - Things to do in specific cities
+        - Current events or seasonal information
+        
+        Always prioritize using the hotel database tools first for hotel-specific queries, then supplement with web search for additional travel information."""
         
         # Initialize the Bedrock model (Claude 3.7 Sonnet)
         self.model = BedrockModel(
@@ -74,7 +88,8 @@ class HotelReservationAgent:
                 get_available_rooms,
                 make_reservation,
                 get_reservation_details,
-                cancel_reservation
+                cancel_reservation,
+                web_search
             ],
             system_prompt=SYSTEM_PROMPT,
         )
