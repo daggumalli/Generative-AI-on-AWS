@@ -30,23 +30,25 @@
             └─────────────────────┘   └─────────────────────┘   └─────────────────────┘
                         │                         │                         │
                         │                         │                         │
-        ┌───────────────┼───────────────┐        │             ┌───────────┼───────────┐
-        │               │               │        │             │           │           │
-        ▼               ▼               ▼        ▼             ▼           ▼           ▼
-┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │     ┌─────────────┐ ┌─────────────┐
-│search_hotels│ │get_available│ │             │ │     │ web_search  │ │   Future    │
-│             │ │   _rooms    │ │             │ │     │             │ │   Tools     │
-│             │ │             │ │             │ │     │             │ │             │
-│ INPUT:      │ │ INPUT:      │ │             │ │     │ INPUT:      │ │             │
-│ • city      │ │ • hotel_id  │ │             │ │     │ • keywords  │ │             │
-│ • state     │ │ • check_in  │ │             │ │     │ • region    │ │             │
-│ • rating    │ │ • check_out │ │             │ │     │ • max_results│ │             │
-│ • max_price │ │             │ │             │ │     │             │ │             │
-│             │ │ OUTPUT:     │ │             │ │     │ OUTPUT:     │ │             │
-│ OUTPUT:     │ │ • room list │ │             │ │     │ • search    │ │             │
-│ • hotel list│ │ • pricing   │ │             │ │     │   results   │ │             │
-│ • details   │ │ • availability│ │           │ │     │ • links     │ │             │
-└─────────────┘ └─────────────┘ │             │ │     └─────────────┘ └─────────────┘
+        ┌───────────────┼───────────────┐  ┌─────┼─────────┐   ┌───────────┼───────────┐
+        │               │               │  ┌─────┼─────┐ ┌─────┼─────┐ │           │           │
+        ▼               ▼               ▼  ▼     ▼     ▼ ▼     ▼     ▼ ▼           ▼           ▼
+┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+│search_hotels│ │get_available│ │make_        │ │get_reservation│ │cancel_      │ │ web_search  │ │   Future    │
+│             │ │   _rooms    │ │reservation  │ │   _details  │ │reservation  │ │             │ │   Tools     │
+│             │ │             │ │             │ │             │ │             │ │             │ │             │
+│ INPUT:      │ │ INPUT:      │ │ INPUT:      │ │ INPUT:      │ │ INPUT:      │ │ INPUT:      │ │             │
+│ • city      │ │ • hotel_id  │ │ • room_id   │ │ • reservation_id│ │ • reservation_id│ │ • keywords  │ │             │
+│ • state     │ │ • check_in  │ │ • guest_name│ │ • guest_email│ │ • guest_email│ │ • region    │ │             │
+│ • rating    │ │ • check_out │ │ • guest_email│ │             │ │             │ │ • max_results│ │             │
+│ • max_price │ │             │ │ • guest_phone│ │ OUTPUT:     │ │ OUTPUT:     │ │             │ │             │
+│             │ │ OUTPUT:     │ │ • check_in  │ │ • booking   │ │ • cancellation│ │ OUTPUT:     │ │             │
+│ OUTPUT:     │ │ • room list │ │ • check_out │ │   details   │ │   confirmation│ │ • search    │ │             │
+│ • hotel list│ │ • pricing   │ │             │ │ • hotel info│ │             │ │   results   │ │             │
+│ • details   │ │ • availability│ │ OUTPUT:   │ │ • guest info│ │             │ │ • links     │ │             │
+│             │ │             │ │ • confirmation│ │             │ │             │ │             │ │             │
+│             │ │             │ │ • reservation_id│ │           │ │             │ │             │ │             │
+└─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘
         │               │       │             │ │             │               │
         │               │       │             │ │             │               │
         ▼               ▼       ▼             ▼ ▼             ▼               ▼
@@ -66,27 +68,6 @@
 └─────────────────────────────────────────────────────────────────────────────────┘
                                                   │
                                                   │
-                        ┌─────────────────────────┼─────────────────────────┐
-                        │                         │                         │
-                        ▼                         ▼                         ▼
-            ┌─────────────────────┐   ┌─────────────────────┐   ┌─────────────────────┐
-            │  make_reservation   │   │get_reservation_     │   │ cancel_reservation  │
-            │                     │   │     details         │   │                     │
-            │ INPUT:              │   │                     │   │ INPUT:              │
-            │ • room_id           │   │ INPUT:              │   │ • reservation_id    │
-            │ • guest_name        │   │ • reservation_id    │   │ • guest_email       │
-            │ • guest_email       │   │ • guest_email       │   │                     │
-            │ • guest_phone       │   │                     │   │ OUTPUT:             │
-            │ • check_in          │   │ OUTPUT:             │   │ • cancellation      │
-            │ • check_out         │   │ • reservation       │   │   confirmation      │
-            │                     │   │   details           │   │                     │
-            │ OUTPUT:             │   │ • hotel info        │   │                     │
-            │ • confirmation      │   │ • room info         │   │                     │
-            │ • reservation_id    │   │ • guest info        │   │                     │
-            └─────────────────────┘   └─────────────────────┘   └─────────────────────┘
-                        │                         │                         │
-                        │                         │                         │
-                        └─────────────────────────┼─────────────────────────┘
                                                   │
                                                   ▼
                                     ┌─────────────────────────────────┐

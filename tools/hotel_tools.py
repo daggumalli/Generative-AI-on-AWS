@@ -381,9 +381,10 @@ def cancel_reservation(reservation_id: int, guest_email: str) -> str:
         if res['status'] == 'cancelled':
             return f"Reservation {reservation_id} is already cancelled."
         
-        # Check if cancellation is allowed (e.g., not same day)
-        if res['check_in_date'] <= date.today():
-            return "Cannot cancel reservations for today or past dates. Please contact the hotel directly."
+        # Check if cancellation is allowed
+        # For demo purposes, allow cancellations for any future check-in dates
+        if res['check_in_date'] < date.today():
+            return "Cannot cancel reservations for past dates. Please contact the hotel directly."
         
         # Cancel the reservation
         cancel_query = """
