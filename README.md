@@ -2,6 +2,9 @@
 
 A collection of advanced Generative AI applications and demonstrations built on AWS services, showcasing cutting-edge AI agent patterns and real-world implementations.
 
+**Demo**
+https://www.youtube.com/watch?v=IJmfIONe3Ws
+
 ## 🎯 **Projects**
 
 ### 🏨 **Hotel Reservations - AI Agentic Application**
